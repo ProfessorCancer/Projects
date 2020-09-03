@@ -11,12 +11,12 @@ moduseragent = { 'user-Agent':"Mobile"}
 
 #set target webpage
 #test url
-url = 'https://www.facebook.com/'
-#url = 'http://172.18.58.238/headers.php'
+#url = 'https://www.facebook.com/'
+url = 'http://172.18.58.238/headers.php'
 link_list = []
 
 ##
-def Task5():
+def Req():
 
     #GET
     r = requests.Session()
@@ -30,8 +30,8 @@ def Task5():
     new_request = r.get(url, headers=header)
 
 
-    Task5File = open("task5.txt", "w")
-    Task5File.write(f"{request.status_code}\n{header}\n$$$ Modded: \n{moduseragent}\n{new_request.headers}")
+    ReqFile = open("Req.txt", "w")
+    ReqFile.write(f"{request.status_code}\n{header}\n$$$ Modded: \n{moduseragent}\n{new_request.headers}")
 
     if statusCode == 200:
         print("OK")
@@ -42,25 +42,26 @@ def Task5():
 
 class parse(scrapy.Spider):
 
-    name = 'task6'
+    name = 'Result'
     #test url
-    start_urls = ['https://www.facebook.com/']
-    #start_urls = ['http://172.18.58.238/index.php']
+    #start_urls = ['https://www.facebook.com/']
+    start_urls = ['http://172.18.58.238/index.php']
     def parse(self, response):
-        Task6 = open("task6.json", 'w')
+        Result = open("Result.json", 'w')
         for link in response.css('a'):
             link_results = link.css('a::attr(href)').get()
             link_list.append(link_results)
-            Task6.write(str({'results': link_results})+"\n")
-        Task6.close()
+            Result.write(str({'results': link_results})+"\n")
+        Result.close()
     print(link_list)
 
 #image urls extractions
-class images(scrapy.Spider):
-    name = 'task7'
-    start_urls = ['https://www.facebook.com/']
-    #start_urls = ['http://172.18.58.238/index/php']
+class parse(scrapy.Spider):
+    name = 'images'
+    #start_urls = ['https://www.facebook.com/']
+    start_urls = ['http://172.18.58.238/index/php']
     def parse(self, response):
+        images = open("images.json", 'w')
         xpath_selector='//img'
         for x in response.xpath(xpath_selector):
             newsel='@src'
@@ -76,7 +77,7 @@ class images(scrapy.Spider):
             callback=self.parse
         )
 
-Task5()
+Req()
 process = CrawlerProcess()
 process.crawl(parse)
 process.crawl(images)

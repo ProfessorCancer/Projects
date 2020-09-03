@@ -4,11 +4,11 @@ link_list = []
 
 class parse(scrapy.Spider):
 
-    name = 'task6'
-    start_urls = ['http://192.168.1.1/sets/1']
+    name = 'Results'
+    start_urls = ['http://172.18.58.238/index.html']
     #test purpose link http://172.18.58.238/index.html
     def parse(self, response):
-        Task6 = open("task6.json", 'w')
+        Task6 = open("Results.json", 'w')
         for link in response.css('a'):
             link_results = link.css('a::attr(href)').get()
             link_list.append(link_results)
@@ -19,7 +19,7 @@ class parse(scrapy.Spider):
 #image urls extractions
 class images(scrapy.Spider):
     name = 'task7'
-    start_urls = ['http://192.168.1.1/index.html']
+    start_urls = ['http://172.18.58.238/index/php']
     #test purpose link http://172.18.58.238/index/php
     def parse(self, response):
         xpath_selector='//img'
