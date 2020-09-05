@@ -1,8 +1,6 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
-import re
 import requests
-from requests import *
 ######## TASK 5
 #modded useragent
 links = []
@@ -14,10 +12,8 @@ moduseragent = { 'user-Agent':"Mobile"}
 #url = 'https://www.facebook.com/'
 url = 'http://172.18.58.238/headers.php'
 link_list = []
-
 ##
 def Req():
-
     #GET
     r = requests.Session()
     request = r.get(url, headers=fakeuseragent)
@@ -28,11 +24,8 @@ def Req():
     #to change header type to mobile
     header.update(moduseragent)
     new_request = r.get(url, headers=header)
-
-
     ReqFile = open("Req.txt", "w")
     ReqFile.write(f"{request.status_code}\n{header}\n$$$ Modded: \n{moduseragent}\n{new_request.headers}")
-
     if statusCode == 200:
         print("OK")
     else:
@@ -56,31 +49,28 @@ class parse(scrapy.Spider):
     print(link_list)
 
 #image urls extractions
-class parse(scrapy.Spider):
-    name = 'images'
-    #start_urls = ['https://www.facebook.com/']
-    start_urls = ['http://172.18.58.238/index/php']
+class NewSpider(scrapy.Spider):
+    name = "new_spider"
+    start_urls = ['http://172.18.58.238']
     def parse(self, response):
-        images = open("images.json", 'w')
-        xpath_selector='//img'
+        xpath_selector = '//img'
         for x in response.xpath(xpath_selector):
-            newsel='@src'
-            yield{
-                'Image Link':x.xpath(newsel).extract_first(),
+            newsel = '@src'
+            yield {
+                'Image Link': x.xpath(newsel).extract_first(),
             }
-        #to recurse next page
-        Page_selector='.next a ::attr(href)'
+
+        Page_selector = '.next a ::attr(href)'
         next_page = response.css(Page_selector).extract_first()
         if next_page:
             yield scrapy.Request(
-            response.urljoin(next_page),
-            callback=self.parse
-        )
+                response.urljoin(next_page),
+                callback=self.parse
+            )
 
 Req()
 process = CrawlerProcess()
 process.crawl(parse)
-process.crawl(images)
 process.start()
 
 # this part isnt working yet. HAS TO DISPLAY LIST OF IMAGE LINKS
