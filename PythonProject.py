@@ -9,8 +9,8 @@ moduseragent = { 'user-Agent':"Mobile"}
 
 #set target webpage
 #test url
-#url = 'https://www.facebook.com/'
-url = 'http://172.18.58.238/headers.php'
+url = 'https://www.facebook.com/'
+#url = 'http://172.18.58.238/headers.php'
 link_list = []
 ##
 def Req():
@@ -36,30 +36,32 @@ def Req():
 class parse(scrapy.Spider):
 
     name = 'Result'
-    #test url
-    #start_urls = ['https://www.facebook.com/']
-    start_urls = ['http://172.18.58.238/index.php']
+    start_urls = ['https://www.facebook.com/']
+    #start_urls = ['http://172.18.58.238/index.php']
     def parse(self, response):
         Result = open("Result.json", 'w')
         for link in response.css('a'):
             link_results = link.css('a::attr(href)').get()
             link_list.append(link_results)
-            Result.write(str({'results': link_results})+"\n")
+            Result.write(str({'results': url + link_results}) + "\n")
         Result.close()
     print(link_list)
 
 #image urls extractions
 class NewSpider(scrapy.Spider):
     name = "new_spider"
-    start_urls = ['http://172.18.58.238']
+    #start_urls = ['http://172.18.58.238']
+    start_url = 'https://www.facebook.com/'
+    open('new_spider.txt', 'w').close()
     def parse(self, response):
+        f = open("new_spider.txt", "w")
         xpath_selector = '//img'
         for x in response.xpath(xpath_selector):
             newsel = '@src'
             yield {
                 'Image Link': x.xpath(newsel).extract_first(),
             }
-
+            f.write(url+i+'\n')
         Page_selector = '.next a ::attr(href)'
         next_page = response.css(Page_selector).extract_first()
         if next_page:
@@ -67,12 +69,12 @@ class NewSpider(scrapy.Spider):
                 response.urljoin(next_page),
                 callback=self.parse
             )
+            f.write(url+i+'\n')
+        f.close()
+
 
 Req()
 process = CrawlerProcess()
 process.crawl(parse)
 process.start()
 
-# this part isnt working yet. HAS TO DISPLAY LIST OF IMAGE LINKS
-print("\n\nLinks: ")
-print(links)

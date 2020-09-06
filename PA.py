@@ -1,48 +1,88 @@
-ef
-isfloat(x):
-try:
-    float(x)
-    return True
-except ValueError:
-    return False
+import scrapy
+from scrapy.crawler import CrawlerProcess
+import re
+import requests
+
+######## TASK 5
+# modded useragent
+fakeuseragent = {
+    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 AppleWebKit/537.36 (KHTML, like Gecko)"}
+moduseragent = {'user-Agent': "Mobile"}
+
+# set target webpage
+# test url
+url = 'https://www.facebook.com/'
 
 
-class CalUtils:
-    names = []
-    height = []
-    totalStudentHeight = 0
-    totalStudentCount = 0
+# url = 'http://172.18.58.238/headers.php'
 
-    def filestuff(self):
-        file = open("C:\\Users\\Andre\\Desktop\\pa test\\listOfStudentHeight.txt", 'r')
-        read = file.readlines()
+##
+def Task5():
+    # GET
+    r = requests.Session()
+    request = r.get(url, headers=fakeuseragent)
+    statusCode = request.status_code
+    # header
+    header = request.headers
 
-        for i in read:
-            temp = i.rstrip("\n")
-            splitlist = temp.split(",")
-            self.names.append(splitlist[0])
-            self.height.append(float(splitlist[1]))
+    # to change header type to mobile
+    header.update(moduseragent)
+    new_request = r.get(url, headers=header)
 
-        file.close()
+    Task5File = open("task5.txt", "w")
+    Task5File.write(f"{request.status_code}\n{header}\n$$$ Modded: \n{moduseragent}\n{new_request.headers}")
 
-        nameinput = input("Please Enter your Name: ")
-        heightinput = input("Please enter student height (in meters): ")
-        while isfloat(heightinput) == False:
-            heightinput = input("Please enter student height (in meters): ")
-        self.height.append(float(heightinput))
-        self.names.append(nameinput)
-        self.totalStudentcount = len(self.height)
-
-    def calAvgHeight(self):
-        for i in self.height:
-            self.totalStudentHeight += i
-
-        avg = self.totalStudentHeight / self.totalStudentcount
-        rounded = avg.__round__(2)
-        return rounded
+    if statusCode == 200:
+        print("OK")
+    else:
+        print("Error status code: %s" % statusCode)
+    print("\n$$$ Modded: \n", moduseragent)
+    print(new_request.headers)
 
 
-start = CalUtils()
-start.filestuff()
-print(
-    f"The average height is {start.calAvgHeight()} for {start.totalStudentcount} students \n\n\n {start.names} \n {start.height} ")
+class parseTask6(scrapy.Spider):
+    name = 'task6'
+    # test url
+    start_urls = ['https://www.facebook.com/']
+    # start_urls = ['http://172.18.58.238/index.php']
+    open("task6.json", 'w').close()
+
+    def parse(self, response):
+        Task6 = open("task6.json", 'a')
+        for link in response.css('a'):
+            link_results = link.css('a::attr(href)').get()
+            Task6.write(str({'results': link_results}) + "\n")
+        Task6.close()
+
+
+# image urls extractions
+class parseImages(scrapy.Spider):
+    img_list = []
+    name = 'task7'
+    # allowed_domains = ['172.18.58.238']
+
+
+ # allowed_domains = ['https://www.facebook.com/']
+start_urls = ['https://www.facebook.com/']
+# start_urls = ['http://172.18.58.238/index/php']
+open('task7.txt', 'w').close()
+
+
+def parse(self, response):
+    url = response.url
+    task7 = open('task7.txt', 'a')
+    for i in response.css('img::attr(src)').extract():
+        if bool(re.findall(r'.+\.jpg', i)):
+            self.img_list.append(url + i)
+            task7.write(url + i + 'n')
+    for n in response.css('a::attr(href)').extract():
+        if n is not None:
+            yield response.follow(n, self.parse)
+    task7.close()
+
+
+Task5()
+process = CrawlerProcess()
+process.crawl(parseTask6)
+process.crawl(parseImages)
+process.start()
