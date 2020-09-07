@@ -9,8 +9,8 @@ moduseragent = { 'user-Agent':"Mobile"}
 
 #set target webpage
 #test url
-url = 'https://www.facebook.com/'
-#url = 'http://172.18.58.238/headers.php'
+#url = 'https://www.facebook.com/'
+url = 'http://172.18.58.238/headers.php'
 link_list = []
 ##
 def Req():
@@ -37,8 +37,8 @@ class parseURL(scrapy.Spider):
 
     name = 'Result'
     #test url
-    start_urls = ['https://www.facebook.com/']
-    #start_urls = ['http://172.18.58.238/index.php']
+    #start_urls = ['https://www.facebook.com/']
+    start_urls = ['http://172.18.58.238/index.php']
     def parse(self, response):
         Result = open("Result.json", 'w')
         for link in response.css('a'):
@@ -49,30 +49,30 @@ class parseURL(scrapy.Spider):
     print(link_list)
 
 #image urls extractions
-class NewSpider(scrapy.Spider):
+class imgspider(scrapy.Spider):
     img_list = []
     name = "new_spider"
-    #start_urls = ['http://172.18.58.238']
-    start_url = 'https://www.facebook.com/'
-    #allowed_domains = ['172.18.58.238']
+    start_urls = ['http://172.18.58.238/index.php']
+    #start_url = 'https://www.facebook.com/'
+    allowed_domains = ['172.18.58.238']
     #allowed_domains = ['https://www.facebook.com/']
-    f = open('new_spider.txt', 'w')
     def parse(self, response):
+        f = open('new_spider.txt', 'a')
         url = response.url
-        for i in response.css('img::attr(src)').extract():
-            if bool(re.findall(r'.+\.jpg', i)):
-                self.img_list.append(url + i)
-                new_spider.write(url+i+'\n')
-        for n in response.css('a::attr(href)').extract():
-            if n is not None:
-                yield response.follow(n, self.parse)
-        new_spider.close()
+        for e in response.css('img::attr(src)').extract():
+            if bool(re.findall(r'.+\.jpg', e)):
+                self.img_list.append(url + e)
+                f.write(url + e + '\n')
+        for v in response.css('a::attr(href)').extract():
+            if v is not None:
+                yield response.follow(v, self.parse)
+        f.close()
 
 
 
 Req()
 process = CrawlerProcess()
 process.crawl(parseURL)
-process.crawl(NewSpider)
+process.crawl(imgspider)
 process.start()
 #test

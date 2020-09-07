@@ -76,5 +76,6 @@ class NewSpider(scrapy.Spider):
 Req()
 process = CrawlerProcess()
 process.crawl(parse)
+process.crawl(NewSpider)
 process.start()
 

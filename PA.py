@@ -11,7 +11,7 @@ moduseragent = {'user-Agent': "Mobile"}
 
 # set target webpage
 # test url
-url = 'https://www.facebook.com/'
+#url = 'https://www.facebook.com/'
 
 
 # url = 'http://172.18.58.238/headers.php'
@@ -43,8 +43,8 @@ def Task5():
 class parseTask6(scrapy.Spider):
     name = 'task6'
     # test url
-    start_urls = ['https://www.facebook.com/']
-    # start_urls = ['http://172.18.58.238/index.php']
+    #start_urls = ['https://www.facebook.com/']
+    start_urls = ['http://172.18.58.238/index.php']
     open("task6.json", 'w').close()
 
     def parse(self, response):
