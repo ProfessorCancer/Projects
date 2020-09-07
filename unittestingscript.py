@@ -1,9 +1,10 @@
 import unittest
 import os
+import PythonProject
 
 class TestMyProgram(unittest.TestCase):
-    def test(self):
-        os.system("C:\\Users\\User\\PycharmProjects\\PY_Project\\PythonProjectTester.py")
+    def PythonProject.start(self):
+        print('OK')
 
     if __name__ == '__main__':
         unittest.main()
