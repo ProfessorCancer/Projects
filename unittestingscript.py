@@ -1,9 +1,9 @@
 import unittest
 import os
-import PythonProject
+import PythonProjectTester
 
 class TestMyProgram(unittest.TestCase):
-    def PythonProject.start(self):
+    def PythonProjectTester.start(self):
         print('OK')
 
     if __name__ == '__main__':
