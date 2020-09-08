@@ -1,6 +1,6 @@
 import unittest
 import os
-import PythonProjectTester
+import PythonProject
 
 class TestMyProgram(unittest.TestCase):
     def test_start(self):
